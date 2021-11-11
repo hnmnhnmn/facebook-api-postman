@@ -120,7 +120,7 @@ router.post("/login", async (req, res) => {
     }
     const accessToken = jwt.sign(
       { userId: user._id },
-      process.env.ACCESS_TOKEN_SECRET
+      'dfsjdh tdhasjh cvmcnvc'
     );
     res.json({ success: true, accessToken });
   } catch (error) {
