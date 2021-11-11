@@ -72,7 +72,7 @@ router.post("/register", async (req, res) => {
     //return token
     const accessToken = jwt.sign(
       { userId: newUser._id },
-      process.env.ACCESS_TOKEN_SECRET
+      'dfsjdh tdhasjh cvmcnvc'
     );
     res.json({ success: true, accessToken });
   } catch (error) {

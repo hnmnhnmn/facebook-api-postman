@@ -18,7 +18,7 @@ const routerMessage = require("./routers/message");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/facebook-user', {
+    await mongoose.connect('mongodb+srv://admin:N188m23n279@cluster0.nrj7q.mongodb.net/server-simple?retryWrites=true&w=majority', {
     
       useNewUrlParser: true,
       useUnifiedTopology: true,
