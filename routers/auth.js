@@ -42,7 +42,7 @@ try tìm coi đã ai đăng ký với username này chưa. Nếu có trả về 
     res.json({ success: true, accessToken });
 catch trả về res 200 json { success: false, message: error }. res.status(500).json({ success: false, message: error }); 
 */
-router.post("/register", async (req, res) => {
+router.post("/signup", async (req, res) => {
   const { username, email, password, password_confirm } = req.body;
   if (!username || !password || !password_confirm || !email) {
     return res.status(400).json({ succes: false, message: "enter empty" });
@@ -56,7 +56,7 @@ router.post("/register", async (req, res) => {
   try {
     const userByUsername = await User.findOne({ username });
     const userByEmail = await User.findOne({ email });
-
+    
     if (userByUsername) {
       return res.status(200).json({ succes: false, message: "user is exist" });
     }
@@ -100,17 +100,17 @@ try
 catch trả về res 200 json { success: false, message: error }. res.status(500).json({ success: false, message: error });
 
 */
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
+router.post("/signin", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
     return res.status(400).json({ success: false, message: "enter empty" });
   }
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "email incorrect" });
+        .json({ success: false, message: "username incorrect" });
     }
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
