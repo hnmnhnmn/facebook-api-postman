@@ -15,6 +15,7 @@ const routerUser = require("./routers/user");
 const routerComment = require("./routers/comment");
 const routerConversation = require("./routers/conversation");
 const routerMessage = require("./routers/message");
+const routerProduct = require("./routers/product");
 
 const connectDB = async () => {
   try {
@@ -65,7 +66,7 @@ app.use("/api/user", routerUser);
 app.use("/api/comment", routerComment);
 app.use("/api/conversation", routerConversation);
 app.use("/api/message", routerMessage);
-
+app.use("/api/products",routerProduct);
 const PORT = process.env.PORT || 6868;
 
 const server = app.listen(PORT, () => console.log("Server is running"));
