@@ -76,7 +76,7 @@ router.get("/", async (req,res) => {
   }
 })
 
-//get a product
+//get product by brand
 router.get("/getProductByBrand/:brand", async (req, res) => {
   try {
     console.log(req.params.brand);

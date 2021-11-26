@@ -23,6 +23,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    birthday: {
+      type: String,
+      default: "",
+    },
+    sex: {
+      type: String,
+      default: "",
+    },
     coverPicture: {
       type: String,
       default: "",
