@@ -37,7 +37,7 @@ router.put("/:id", verifyToken, async (req, res) => {
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const productDelete = await Product.findOneAndDelete({
-      _id: req.params.id
+      _id: req.params.id,
     });
 
     if (!productDelete) {
@@ -67,31 +67,59 @@ router.get("/:id", async (req, res) => {
 });
 
 //get all products
-router.get("/", async (req,res) => {
-  try{
+router.get("/", async (req, res) => {
+  try {
     const products = await Product.find({});
-    res.json({success: true, products});
-  }catch(error){
-    res.json({success: false, message:error.toString()});
+    res.json({ success: true, products });
+  } catch (error) {
+    res.json({ success: false, message: error.toString() });
   }
-})
+});
 
 //get product by brand
 router.get("/getProductByBrand/:brand", async (req, res) => {
   try {
-    console.log(req.params.brand);
+    // console.log(req.params.brand);
     const product = await Product.find({ brandName: req.params.brand });
     if (!product) {
       return res
         .status(400)
         .json({ success: false, message: "not found product" });
     }
-    console.log(product);
+    // console.log(product);
     res.json({ success: true, product });
   } catch (error) {
     res.json({ success: false, message: error.toString() });
   }
 });
+// //get lastest product
+router.get("/getLastest/:a", async (req, res) => {
+  try {
+    const product = await Product.find({}).sort({createdAt: -1});
+    if (!product) {
+      return res
+        .status(400)
+        .json({ success: false, message: "not found product" });
+    }
+    // console.log(product);
+    res.json({ success: true, product });
+  } catch (error) {
+    res.json({ success: false, message: error.toString() });
+  }
+});
+
+//get produt by discount
+router.get("/getByDiscount/:discountLow/:discountHigh", async (req,res) =>{
+  try{
+    const product = await Product.find({"priceDiscount": { $gte: req.params.discountLow, $lte:req.params.discountHigh}});
+    if(!product) {
+      return res.status(400).json({success:false , message:"not found discount"});
+    }
+    res.json({success:true, product});
+  }catch(error) {
+    res.json({success: false , message: error.toString()});
+  }
+})
 
 // //like and dislike
 // router.put("/:id/like", verifyToken, async (req, res) => {

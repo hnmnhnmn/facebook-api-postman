@@ -53,14 +53,14 @@ const ProductSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    createAt: {
-      type: String,
-      default: "",
-    },
-    updateAt: {
-      type: String,
-      default: "",
-    },
+    // createAt: {
+    //   type: Date,
+    //   default: Date.now
+    // },
+    // updateAt: {
+    //   type: Date,
+    //   default: Date.now
+    // },
   },
   { timestamps: true }
 );
