@@ -27,15 +27,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    sex: {
+    gender: {
       type: String,
       default: "",
     },
-    coverPicture: {
-      type: String,
-      default: "",
-    },
-    from: {
+    avatar: {
       type: String,
       default: "",
     },
@@ -51,9 +47,13 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    desc: {
+    bio: {
       type: String,
       default: "",
+    },
+    admin:{
+      type: Boolean,
+      default: false
     },
     relationship: {
       type: Number,

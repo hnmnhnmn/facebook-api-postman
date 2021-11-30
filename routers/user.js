@@ -2,13 +2,29 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middleware/auth");
+const isAdmin = require("../middleware/auth");
 const User = require("../models/User");
 
 //update user
-router.put("/", verifyToken, async (req, res) => {
+router.patch("/", verifyToken, async (req, res) => {
   try {
     const userUpdate = await User.findOneAndUpdate(
       { _id: req.userId },
+      req.body,
+      {
+        new: true,
+      }
+    );
+    res.json({ success: true, userUpdate });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error });
+  }
+});
+//update user by admin
+router.patch("/updateuser/:id",isAdmin, async (req,res) => {
+  try {
+    const userUpdate = await User.findOneAndUpdate(
+      { _id: req.params.id },
       req.body,
       {
         new: true,
@@ -63,7 +79,7 @@ router.get("/",verifyToken, async (req, res) => {
 
 // create a user
 router.post("/createuser", async (req, res) => {
-    const {username, email, password, birthday,sex} =req.body;
+    const {username, email, password, birthday,gender,admin} =req.body;
     if (!username || !password  || !email) {
       return res.status(400).json({ succes: false, message: "enter empty" });
     }
@@ -80,7 +96,7 @@ router.post("/createuser", async (req, res) => {
       //all good
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const newUser = new User({ username, email, password: hashedPassword, birthday,sex });
+      const newUser = new User({ username, email, password: hashedPassword, birthday,gender,admin });
       await newUser.save();
 
       //return token
