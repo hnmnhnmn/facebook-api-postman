@@ -101,7 +101,7 @@ catch trả về res 200 json { success: false, message: error }. res.status(500
 
 */
 router.post("/signin", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, admin } = req.body;
   if (!username || !password) {
     return res.status(400).json({ success: false, message: "enter empty" });
   }
@@ -119,7 +119,7 @@ router.post("/signin", async (req, res) => {
         .json({ succes: false, message: "password incorrect" });
     }
     const accessToken = jwt.sign(
-      { userId: user._id },
+      { userId: user._id, admin: user.admin },
       'dfsjdh tdhasjh cvmcnvc'
     );
     res.json({ success: true, accessToken });

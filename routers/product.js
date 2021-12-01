@@ -75,7 +75,20 @@ router.get("/", async (req, res) => {
     res.json({ success: false, message: error.toString() });
   }
 });
+//get page from page and pageSize 
+router.get("/:page/:pageSize", async (req, res) => {
+  try {
+    const products = await Product.find({});
+    const pageSize = req.params.pageSize;
+    const page = req.params.page;
+    const listProduct = products.slice(pageSize*page,pageSize*(page+1));
 
+
+    res.json({ success: true, listProduct });
+  }catch(error) {
+    res.json({ success: false, message: error.toString() });
+  }
+})
 //get product by brand
 router.get("/getProductByBrand/:brand", async (req, res) => {
   try {

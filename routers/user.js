@@ -3,10 +3,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middleware/auth");
 const isAdmin = require("../middleware/auth");
+const verifyAdmin = require('../middleware/auth')
 const User = require("../models/User");
 
 //update user
-router.patch("/", verifyToken, async (req, res) => {
+router.patch("/", verifyAdmin, async (req, res) => {
   try {
     const userUpdate = await User.findOneAndUpdate(
       { _id: req.userId },
@@ -65,7 +66,7 @@ router.get("/getbyname/:name",verifyToken, async (req, res) => {
  
 })
 //get all user
-router.get("/",verifyToken, async (req, res) => {
+router.get("/",verifyAdmin, async (req, res) => {
   try {
     const users = await User.find({});
     if (!users) {

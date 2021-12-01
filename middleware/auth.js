@@ -12,6 +12,7 @@ const verifyToken = (req, res, next) => {
   try {
     const decode = jwt.verify(token,'dfsjdh tdhasjh cvmcnvc');
     req.userId = decode.userId;
+    req.admin = decode.admin;
     next();
   } catch (error) {
     console.log(error);
@@ -42,5 +43,17 @@ const isAdmin = (req, res, next) => {
   }
   
 }; 
+const verifyAdmin = (req, res, next) => {
+  verifyToken(req, res, () => {
+    console.log(req.admin)
+    if (req.admin) {
+      next();
+    } else {
+      res.status(400).json("not allowed( you are not admin");
+    }
+  });
+};
+// module.exports = verifyAdmin;;
 module.exports = isAdmin;
-module.exports = verifyToken;
+module.exports =verifyToken;
+module.exports =verifyAdmin;
