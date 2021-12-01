@@ -2,10 +2,11 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middleware/auth");
-const isAdmin = require("../middleware/auth");
+//const isAdmin = require("../middleware/auth");
+const verifyAdmin = require('../middleware/authAdmin')
 const User = require("../models/User");
 
-//update user
+//update user by its own user
 router.patch("/", verifyToken, async (req, res) => {
   try {
     const userUpdate = await User.findOneAndUpdate(
@@ -21,7 +22,7 @@ router.patch("/", verifyToken, async (req, res) => {
   }
 });
 //update user by admin
-router.patch("/updateuser/:id",isAdmin, async (req,res) => {
+router.patch("/updateuser/:id",verifyAdmin, async (req,res) => {
   try {
     const userUpdate = await User.findOneAndUpdate(
       { _id: req.params.id },
@@ -65,7 +66,7 @@ router.get("/getbyname/:name",verifyToken, async (req, res) => {
  
 })
 //get all user
-router.get("/",verifyToken, async (req, res) => {
+router.get("/",verifyAdmin, async (req, res) => {
   try {
     const users = await User.find({});
     if (!users) {
@@ -179,6 +180,38 @@ router.put("/:id/follow", verifyToken, async (req, res) => {
     }
     const newUser = await User.findById(req.userId);
     res.json({ success: true, newUser });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error });
+  }
+});
+
+//get followes by id
+router.get("/:id/followers",verifyAdmin, async (req,res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    const followers = user.followers;
+    if (!followers) {
+      return res
+        .status(400)
+        .json({ success: false, message: "not found user" });
+    }
+    res.json({ success: true, followers });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error });
+  }
+});
+
+//get followings by id
+router.get("/:id/followings",verifyAdmin, async (req,res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    const followings = user.followings;
+    if (!followings) {
+      return res
+        .status(400)
+        .json({ success: false, message: "not found user" });
+    }
+    res.json({ success: true, followings });
   } catch (error) {
     res.status(500).json({ success: false, message: error });
   }
