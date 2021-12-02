@@ -7,7 +7,7 @@ const verifyAdmin = require('../middleware/auth')
 const User = require("../models/User");
 
 //update user
-router.patch("/", verifyAdmin, async (req, res) => {
+router.patch("/", verifyToken, async (req, res) => {
   try {
     const userUpdate = await User.findOneAndUpdate(
       { _id: req.userId },
@@ -22,7 +22,7 @@ router.patch("/", verifyAdmin, async (req, res) => {
   }
 });
 //update user by admin
-router.patch("/updateuser/:id",isAdmin, async (req,res) => {
+router.patch("/updateuser/:id",verifyToken, async (req,res) => {
   try {
     const userUpdate = await User.findOneAndUpdate(
       { _id: req.params.id },
@@ -79,9 +79,9 @@ router.get("/",verifyAdmin, async (req, res) => {
 });
 
 // create a user
-router.post("/createuser", async (req, res) => {
+router.post("/createuser",verifyToken,async (req, res) => {
     const {username, email, password, birthday,gender,admin} =req.body;
-    if (!username || !password  || !email) {
+    if (!username || !password  || !email) { 
       return res.status(400).json({ succes: false, message: "enter empty" });
     }
     try {
@@ -149,7 +149,38 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-
+//follow and unfollow
+router.put("/follow/:id",verifyToken, async (req,res) => {
+  try{
+    const currentUser = await User.findById(req.userId);
+    const friend = await User.findById(req.params.id);
+    if(!friend) {
+      return res.status(400).json({success:false, message:"not found user to follow/unfollow"});
+    }
+    console.log(currentUser.followings);
+    if(!currentUser.followings.includes(req.params.id)){
+      await currentUser.updateOne(
+        {$push : { followings: req.params.id}},
+        {new:true}
+      );
+      await friend.updateOne(
+        {$push: { followers: req.params.id}},
+        {new: true}
+      )
+    }else{
+      await currentUser.updateOne(
+        {$pull:{followings: req.params.id }},
+        {new:true}
+      );
+      await friend.updateOne(
+        {$pull:{followers: req.params.id}},
+        {new:true}
+      );
+    }
+  }catch(error){
+    res.status(500).json({ success: false, message: error.toString() });
+  }
+});
 //follow and unfollow a user
 router.put("/:id/follow", verifyToken, async (req, res) => {
   try {

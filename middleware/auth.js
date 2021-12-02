@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+
 const verifyToken = (req, res, next) => {
   const authHeader = req.header("Authorization");
 
@@ -41,18 +42,19 @@ const isAdmin = (req, res, next) => {
   }else {
     return res.status(403).json({ success: false, message: error.toString() });
   }
-  
 }; 
+
 const verifyAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
     console.log(req.admin)
     if (req.admin) {
       next();
     } else {
-      res.status(400).json("not allowed( you are not admin");
+      res.status(400).json("not allowed (you are not admin)");
     }
   });
 };
+
 // module.exports = verifyAdmin;;
 module.exports = isAdmin;
 module.exports =verifyToken;
