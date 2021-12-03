@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -22,7 +23,7 @@ const routerUserDUT = require("./routers/userDUT");
 const connectDB = async () => {
   try {
     await mongoose.connect('mongodb+srv://admin:N188m23n279@cluster0.nrj7q.mongodb.net/server-simple?retryWrites=true&w=majority', {
-    
+      useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -40,7 +41,8 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 app.use(cors());
-
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 app.use("/api/images", express.static(path.join(__dirname, "public/images")));
 
 const storage = multer.diskStorage({

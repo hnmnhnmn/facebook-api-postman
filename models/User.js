@@ -2,32 +2,34 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
+    coin: {
+      type: Number,
+      default: 20,
+    },
+    deviceId: {
+      type: String,
+      unique: true  
+    },
+    phone: {
+      type: String,
+      unique: true
+    },
     username: {
-      type: String,
-      require: true,
-      min: 3,
-      max: 20,
-      unique: true,
-    },
-    password: {
-      type: String,
-      require: true,
-      min: 6,
-      max: 50,
-    },
-    email: {
-      type: String,
-      unique: true,
-    },
-    profilePicture: {
       type: String,
       default: "",
     },
-    birthday: {
-      type: String,
+    password: {
+      type:String,
+    },
+    email: {
+      type:String,
       default: "",
     },
     gender: {
+      type: String,
+      default: "",
+    },
+    bio: {
       type: String,
       default: "",
     },
@@ -35,29 +37,21 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    address: {
+    url_video: {
       type: String,
       default: "",
     },
-    followers: {
-      type: Array,
-      default: [],
+    birthday: {
+      type: String,
+      default: "",
     },
     followings: {
       type: Array,
       default: [],
     },
-    bio: {
-      type: String,
-      default: "",
-    },
-    admin:{
-      type: Boolean,
-      default: false
-    },
-    relationship: {
-      type: Number,
-      enum: [1, 2, 3],
+    followers: {
+      type: Array,
+      default: [],
     },
   },
   { timestamps: true },
