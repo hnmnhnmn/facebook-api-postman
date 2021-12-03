@@ -137,6 +137,7 @@ router.get("/:id",  async (req, res) => {
           .status(400)
           .json({ success: false, message: "not found user" });
       }
+      console.log(user);
       res.json({ success: true, user });
     } catch (error) {
       res.status(500).json({ success: false, message: error });
