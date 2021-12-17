@@ -5,6 +5,15 @@ const verifyToken = require("../middleware/auth");
 
 const User = require("../models/User");
 
+function phonenumber(inputtxt) {
+  var phoneno = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+  if (inputtxt.match(phoneno)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 //check user is login
 router.get("/", verifyToken, async (req, res) => {
   try {
@@ -43,40 +52,113 @@ try tìm coi đã ai đăng ký với username này chưa. Nếu có trả về 
 catch trả về res 200 json { success: false, message: error }. res.status(500).json({ success: false, message: error }); 
 */
 router.post("/signup", async (req, res) => {
-  const { username, email, password, password_confirm } = req.body;
-  if (!username || !password || !password_confirm || !email) {
+  const { phone, password, password_confirm, deviceId, coin } = req.body;
+  if (!phone || !password || !password_confirm) {
     return res.status(400).json({ succes: false, message: "enter empty" });
   }
 
   if (password !== password_confirm) {
     return res
       .status(400)
-      .json({ succes: false, message: "password confirm incorrect" });
+      .json({ succes: false, message: "Password confirm incorrect" });
+  }
+  // if (gender !== "male" && gender !== "female") {
+  //   return res
+  //     .status(400)
+  //     .json({ succes: false, message: "Gender must be male or female" });
+  // }
+  //password must contain a lowercase letter
+  var lowerCaseLetters = /[a-z]/g;
+  if (!password.match(lowerCaseLetters)) {
+    return res.status(400).json({
+      success: false,
+      message: "Password must contain a lowercase letter",
+    });
+  }
+  // //password must contain a Uppercase letter
+  // var upperCaseLetters = /[A-Z]/g;
+  // if(!password.match(upperCaseLetters)){
+  //   return res.status(400).json({success:false , message: "password must contain a Uppercase letter"});
+  // }
+  //password must contain a number
+  var numbers = /[0-9]/g;
+  if (!password.match(numbers)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Password must contain a number" });
+  }
+  // password minimum 6 characters
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Minimum password 6 characters" });
+  }
+  // password maximum 30 characters
+  if (password.length > 30) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Maximum password 30 characters" });
+  }
+  if (!phonenumber(phone)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid phone number" });
   }
   try {
-    const userByUsername = await User.findOne({ username });
-    const userByEmail = await User.findOne({ email });
-    
-    if (userByUsername) {
-      return res.status(200).json({ succes: false, message: "user is exist" });
-    }
-    if (userByEmail) {
-      return res.status(200).json({ succes: false, message: "email is exist" });
-    }
-    //all good
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const newUser = new User({ username, email, password: hashedPassword });
-    await newUser.save();
+    const userByPhone = await User.findOne({ phone });
+    //const userByUsername = await User.findOne({ username });
+    const userByDeviceId = await User.findOne({ deviceId });
+    // if (userByDeviceId) {
+    //   return res.status(200).json({ succes: false, message: "This device is already registered with this phone number. Use another phone number please." });
+    // }
 
-    //return token
-    const accessToken = jwt.sign(
-      { userId: newUser._id },
-      'dfsjdh tdhasjh cvmcnvc'
-    );
-    res.json({ success: true, accessToken });
+    if (userByPhone) {
+      return res
+        .status(200)
+        .json({ succes: false, message: "This phone is already registered" });
+    }
+    //
+    if (userByDeviceId) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const newUser = new User({
+        phone,
+        password: hashedPassword,
+        deviceId,
+        coin: 0,
+      });
+      await newUser.save();
+
+      //return token
+      const accessToken = jwt.sign(
+        { userId: newUser._id },
+        "dfsjdh tdhasjh cvmcnvc"
+      );
+      console.log("success");
+      res.json({ status: 200, accessToken ,userId: newUser._id});
+    } else {
+      //all good
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const newUser = new User({
+        phone,
+        password: hashedPassword,
+        deviceId,
+        coin,
+      });
+      await newUser.save();
+
+      //return token
+      const accessToken = jwt.sign(
+        { userId: newUser._id },
+        "dfsjdh tdhasjh cvmcnvc"
+      );
+      console.log("success");
+      res.json({ status: 200, accessToken ,userId: newUser._id});
+    }
   } catch (error) {
-    res.status(500).json({ success: false, message: error });
+    console.log("fail");
+    res.status(500).json({ success: false, message: error.toString() });
   }
 });
 
@@ -101,31 +183,37 @@ catch trả về res 200 json { success: false, message: error }. res.status(500
 
 */
 router.post("/signin", async (req, res) => {
-  const { username, password, admin } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ success: false, message: "enter empty" });
+  const { phone, password, deviceId } = req.body;
+  if (!phone || !password) {
+    return res.status(400).json({ status: 400, message: "enter empty" });
   }
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ phone });
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "username incorrect" });
+        .json({ status: 400, message: "Phone or password incorrect" });
     }
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
       return res
         .status(400)
-        .json({ succes: false, message: "password incorrect" });
+        .json({ status: 400, message: "Phone or password incorrect" });
     }
     const accessToken = jwt.sign(
-      { userId: user._id, admin: user.admin },
-      'dfsjdh tdhasjh cvmcnvc'
+      { userId: user._id },
+      "dfsjdh tdhasjh cvmcnvc"
     );
-    res.json({ success: true, accessToken });
+    //console.log("success");
+    res.status(200).json({status:200, accessToken ,userId: user._id});
   } catch (error) {
-    res.status(500).json({ success: false, message: error });
+    console.log("fail");
+    res.status(500).json({ status: 400, message: error.toString() });
   }
 });
-
+router.post("/gettest", (req, res) => {
+  const token = req.body;
+  res.json(token);
+  console.log(token);
+});
 module.exports = router;
