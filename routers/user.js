@@ -22,7 +22,7 @@ router.patch("/", verifyToken, async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password ");
     res.json({ success: true, userUpdate });
   } catch (error) {
     res.status(500).json({ success: false, message: error });

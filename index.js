@@ -19,7 +19,7 @@ const routerMessage = require("./routers/message");
 const routerProduct = require("./routers/product");
 const routerCart = require("./routers/cart");
 const routerUserDUT = require("./routers/userDUT");
-
+const routerRoom = require("./routers/room");
 const connectDB = async () => {
   try {
     await mongoose.connect('mongodb+srv://admin:N188m23n279@cluster0.nrj7q.mongodb.net/server-simple?retryWrites=true&w=majority', {
@@ -73,6 +73,7 @@ app.use("/api/message", routerMessage);
 app.use("/api/products",routerProduct);
 app.use("/api/cart",routerCart);
 app.use("/api/userdut",routerUserDUT);
+app.use("/api/room",routerRoom);
 const PORT = process.env.PORT || 6868;
 
 const server = app.listen(PORT, () => console.log("Server is running"));
